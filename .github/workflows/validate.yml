@@ -1,0 +1,32 @@
+name: AlphaScope validation
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      live_scan:
+        description: Run live market data collection
+        type: boolean
+        default: true
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install -r requirements.txt
+      - run: python -m compileall -q scan.py screening.py tests
+      - run: python -m unittest discover -s tests -v
+      - name: Collect live data
+        if: github.event_name == 'workflow_dispatch' && inputs.live_scan
+        run: python scan.py
+      - uses: actions/upload-artifact@v4
+        if: always() && github.event_name == 'workflow_dispatch' && inputs.live_scan
+        with:
+          name: alphascope-market-screen
+          path: outputs/
+          if-no-files-found: warn
