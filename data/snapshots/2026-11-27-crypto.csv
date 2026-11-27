@@ -1,0 +1,3 @@
+date,symbol,asset_id,asset_type,price_usd,market_cap_usd,daily_dollar_volume_usd,source_url,collection_method
+2026-11-27,CKB,nervos-network,crypto,0.0008326,41619718,3844739,https://www.coingecko.com/en/coins/nervos-network,manual_web_snapshot
+2026-11-27,RVN,ravencoin,crypto,0.0008724,14482514,1015131,https://www.coingecko.com/en/coins/ravencoin,manual_web_snapshot
