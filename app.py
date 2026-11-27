@@ -3,6 +3,8 @@ import io
 import pandas as pd
 import streamlit as st
 from dashboard import prepare, filter_assets
+from quant import prices_from_csv, risk_metrics, equal_weight_backtest, bootstrap_paths, valuation, fundamental_ratios
+import numpy as np
 
 st.set_page_config(page_title="AlphaScope", page_icon="📊", layout="wide")
 st.title("AlphaScope | Investment Intelligence")
@@ -36,7 +38,7 @@ a,b,c = st.columns(3)
 a.metric("Valid observations", len(data))
 b.metric("Matching observations", len(result))
 c.metric("Asset classes", data.asset_type.nunique())
-tab1,tab2,tab3 = st.tabs(["Market screener","Scenario calculator","Methodology"])
+tab1,tab2,tab3,tab4,tab5 = st.tabs(["Market screener","Scenario calculator","Methodology","Historical risk & backtest","Fundamentals & valuation"])
 with tab1:
     st.dataframe(result, hide_index=True, use_container_width=True)
     if not result.empty:
@@ -49,3 +51,49 @@ with tab2:
     st.caption("No forecast. Excludes fees, taxes and currency changes.")
 with tab3:
     st.markdown("### Methodology\nThe screener uses price, trading turnover and market capitalization. It does not estimate intrinsic value, classify stablecoins, or predict future returns.\n\nData must contain symbol, asset_type, price, market_cap, daily_dollar_volume, source and collected_at. All prices and monetary fields are USD. Each timestamp must represent the collection time, not necessarily the quote time.\n\nPublic demo intentionally avoids automatic redistribution of third-party market quotes. Upload only data you are authorized to process.")
+
+with tab4:
+    st.subheader("Historical risk and fixed-universe backtest")
+    st.caption("Upload authorized adjusted daily prices with date and one column per asset. Use a single asset-class calendar. No predictive claims.")
+    history=st.file_uploader("Adjusted price history CSV",type=["csv"],key="history")
+    periods=st.selectbox("Observations per year",[252,365])
+    fee=st.number_input("Trading cost (basis points)",min_value=0,max_value=1000,value=10)
+    try:
+        if history and history.size>5_000_000:
+            raise ValueError("Maximum file size 5 MB")
+        if history:
+            raw=pd.read_csv(history)
+        else:
+            rng=np.random.default_rng(42)
+            raw=pd.DataFrame({"date":pd.bdate_range("2024-01-01",periods=252),"DEMO-A":100*np.cumprod(1+rng.normal(.0003,.015,252)),"DEMO-B":100*np.cumprod(1+rng.normal(.0002,.02,252))})
+            st.info("Synthetic historical example, not actual returns. Use 252 periods.")
+        p=prices_from_csv(raw)
+        if p.shape[1]>50 or len(p)>10000:
+            raise ValueError("Maximum 50 assets and 10,000 dates")
+        st.dataframe(risk_metrics(p,periods))
+        net=equal_weight_backtest(p,fee)
+        st.line_chart(pd.concat([net,p/p.iloc[0]],axis=1))
+        st.caption("Equal-weight daily rebalancing, initial and trading costs. Individual buy-and-hold comparison lines exclude costs. No survivor-bias correction.")
+        st.dataframe(p.pct_change().dropna().corr())
+        paths=bootstrap_paths(p,horizon=periods)
+        st.write("Illustrative IID bootstrap terminal return quantiles (5%, median, 95%)",np.quantile(paths,[.05,.5,.95]))
+        st.caption("Not calibrated probabilities; ignores serial dependence, regime changes and costs.")
+    except Exception as exc:
+        st.error(str(exc))
+with tab5:
+    st.subheader("User-supplied trailing fundamentals")
+    st.caption("Fictional defaults. Use consistent currency units and reporting period. No automatic filing ingestion.")
+    inputs={}
+    for label,default in [("Revenue",100.),("Net income",10.),("Operating cash flow",20.),("Capital expenditure",5.),("Debt",30.),("Equity",50.),("Market capitalization",100.)]:
+        inputs[label]=st.number_input(label,value=default,key="fund_"+label)
+    try:
+        st.json({k:(float(v) if np.isfinite(v) else None) for k,v in fundamental_ratios(*inputs.values()).items()})
+    except ValueError as exc:
+        st.error(str(exc))
+    st.subheader("Earnings multiple scenario")
+    e=st.number_input("Annual common earnings (millions)",min_value=0.,value=5.2)
+    s=st.number_input("Common shares (millions)",min_value=.001,value=42.55)
+    m=st.number_input("Assumed earnings multiple",min_value=0.,value=12.)
+    d=st.slider("Additional dilution (%)",0,100,0)
+    st.metric("Scenario value per share",f"{valuation(e,s,m,d/100):.2f}")
+    st.caption("Assumed multiple and earnings, not an independently estimated intrinsic value.")
