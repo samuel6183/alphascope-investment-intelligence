@@ -42,3 +42,7 @@ The initial USD 5 price and USD 100,000 turnover thresholds are heuristic. Provi
 ## Interactive dashboard
 
 Run `streamlit run app.py` after installing requirements. The public demo uses fictional data by default; upload an authorized single-snapshot CSV to explore your own research data. See [deployment guide](docs/deployment.md). No live public feed or trading is enabled. A software license has not yet been selected.
+
+## Research edition
+
+The dashboard includes historical risk metrics, a fixed-universe equal-weight backtest with trading costs, bootstrap scenarios, fundamental ratio calculations and earnings multiple scenarios. Use authorized CSV data or explicitly synthetic examples. See [release scope and mathematical assumptions](docs/release.md). No predictive performance, public live feed or commercial readiness is claimed.
