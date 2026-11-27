@@ -38,3 +38,7 @@ Open outputs/screen.csv in Excel. Filter eligible=True to view candidates. Inspe
 5. Build a dashboard.
 
 The initial USD 5 price and USD 100,000 turnover thresholds are heuristic. Provider data may be delayed, incomplete or subject to rate limits. No predictive performance has yet been demonstrated.
+
+## Interactive dashboard
+
+Run `streamlit run app.py` after installing requirements. The public demo uses fictional data by default; upload an authorized single-snapshot CSV to explore your own research data. See [deployment guide](docs/deployment.md). No live public feed or trading is enabled. A software license has not yet been selected.
