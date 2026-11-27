@@ -1,48 +1,29 @@
-# AlphaScope — Investment Intelligence
+# AlphaScope | Quantitative Investment Intelligence
 
-A reproducible Python research project for discovering low-priced equities and cryptocurrencies. Low unit price is not intrinsic value. This is not investment advice or an automated trading system.
+**Research toolkit for screening, historical risk analysis and scenario-based valuation**
 
-## Getting started
+[Read the technical case study](CASE_STUDY.md) · [Methods and limitations](docs/release.md) · [Dashboard source](app.py)
 
-Use Python 3.11 or newer. In a terminal:
+## What the project does
+AlphaScope separates low-price asset discovery from financial risk measurement and valuation scenarios. It uses authorized user-provided data or clearly labeled fictional examples; it is not a trading or investment advice platform.
 
+![Initial screening results](docs/figures/screening_snapshot.svg)
+
+| Evidence | Result |
+|---|---|
+| Initial personal collection | 258 assets; 186 passed heuristic filters; zero logged collection errors |
+| Automated validation | [19 tests passed](https://github.com/samuel6183/alphascope-investment-intelligence/actions/runs/45916660455) |
+| Historical risk | Return, volatility, Sharpe, Sortino, drawdown and VaR |
+| Portfolio research | Fixed-universe backtest and bootstrap scenarios |
+| Fundamentals | User-entered ratios and earnings-multiple scenarios |
+
+## Try the application locally
 ```bash
-git clone https://github.com/samuel6183/alphascope-investment-intelligence.git
-cd alphascope-investment-intelligence
 python -m pip install -r requirements.txt
 python -m unittest discover -s tests -v
-python scan.py
+streamlit run app.py
 ```
 
-## Understanding the code
+The [successful personal scan](https://github.com/samuel6183/alphascope-investment-intelligence/actions/runs/45915690743) was a limited universe snapshot. Passing a filter is not a buy signal. The public dashboard is not confirmed deployed; licensing and public data-feed rights remain outstanding. No demonstrated predictive performance or real trading gains are claimed.
 
-| File | Purpose |
-|---|---|
-| scan.py | Requests stock and crypto data, records errors and exports CSV |
-| screening.py | Validates numeric fields and applies explicit filters |
-| tests/test_screening.py | Tests normal, missing, invalid and boundary values |
-| docs/methodology.md | Documents assumptions and research limitations |
-
-The screen function returns a Boolean and a list of rejection reasons. A Boolean is True or False. A dictionary maps field names to values. The main loop visits each asset, calls the screen function and records its decision.
-
-## Results
-
-Open outputs/screen.csv in Excel. Filter eligible=True to view candidates. Inspect outputs/errors.json to identify missing coverage. Never treat a passing screen as a buy recommendation.
-
-## Roadmap
-
-1. Verify live provider coverage and quote freshness.
-2. Expand the universe and include fundamental data.
-3. Develop separate equity and crypto scoring models.
-4. Validate with historical point-in-time data and transaction costs.
-5. Build a dashboard.
-
-The initial USD 5 price and USD 100,000 turnover thresholds are heuristic. Provider data may be delayed, incomplete or subject to rate limits. No predictive performance has yet been demonstrated.
-
-## Interactive dashboard
-
-Run `streamlit run app.py` after installing requirements. The public demo uses fictional data by default; upload an authorized single-snapshot CSV to explore your own research data. See [deployment guide](docs/deployment.md). No live public feed or trading is enabled. A software license has not yet been selected.
-
-## Research edition
-
-The dashboard includes historical risk metrics, a fixed-universe equal-weight backtest with trading costs, bootstrap scenarios, fundamental ratio calculations and earnings multiple scenarios. Use authorized CSV data or explicitly synthetic examples. See [release scope and mathematical assumptions](docs/release.md). No predictive performance, public live feed or commercial readiness is claimed.
+[Research methodology](docs/methodology.md) · [Deployment guide](docs/deployment.md) · [Research portfolio](https://github.com/samuel6183)
