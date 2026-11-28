@@ -27,3 +27,9 @@ streamlit run app.py
 The [successful personal scan](https://github.com/samuel6183/alphascope-investment-intelligence/actions/runs/45915690743) was a limited universe snapshot. Passing a filter is not a buy signal. The public dashboard is not confirmed deployed; licensing and public data-feed rights remain outstanding. No demonstrated predictive performance or real trading gains are claimed.
 
 [Research methodology](docs/methodology.md) · [Deployment guide](docs/deployment.md) · [Research portfolio](https://github.com/samuel6183)
+
+## Verification status
+
+[![AlphaScope validation](https://github.com/samuel6183/alphascope-investment-intelligence/actions/workflows/validate.yml/badge.svg)](https://github.com/samuel6183/alphascope-investment-intelligence/actions/workflows/validate.yml)
+
+[Latest successful validation inspected on 28 November 2026](https://github.com/samuel6183/alphascope-investment-intelligence/actions/runs/45922795706). This is evidence of automated workflow execution, not independent scientific replication or a verified public deployment.
